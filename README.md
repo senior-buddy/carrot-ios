@@ -10,11 +10,25 @@
 
 ## 🗂 Table of Contents
 
+1. Features
+2. To do
+3. The Picnic Protocol
+4. Sessions
+5. Messages
+6. Receiving Messages from Carrot
+7. Sending Messages to Carrot
+
+## ✨ Features
+
+## 📋 To do
+
 ## 🥪 The Picnic Protocol
 
 ## 🌎 Sessions
 
 ## ✉️ Messages
+
+Messages in Carrot are represented by the `Message<T: Codable>` struct. This allows you, the developer, to ...
 
 ## 📨 Receiving Messages from Carrot
 
