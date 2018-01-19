@@ -28,6 +28,19 @@ Carrot is an easy-to-use, real-time framework for building applications with mul
 
 ## 🌎 Sessions
 
+Sessions are central to Carrot apps. A session is responsible for two things:
+
+1. Managing authentication via some underlying protocol.
+2. Providing a clean interface to the WebSocket used to relay messages to/from the Carrot server.
+
+There are two types of sessions in Carrot: `CarrotSession` and `CustomCarrotSession`. The difference between the two lies in the underlying protocol: `CarrotSession` uses the Picnic Protocol and `CustomCarrotSession` allows for a custom protocol that conforms to `SessionDriver`.
+
+### CarrotSession
+
+### CustomCarrotSession
+
+#### SessionDriver
+
 ## ✉️ Messages
 
 Messages in Carrot are how information about events gets encoded and packaged for the server-side to broadcast to other clients in the same session. In Swift, they are represented by the `Message<T: Codable>` struct:
