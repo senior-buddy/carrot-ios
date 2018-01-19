@@ -43,7 +43,9 @@ The `transform` property can be used to encode information about the position, o
 
 The generic `object` parameter allows you, the developer, to package any `Codable` information within a `Message`. This works nicely not only with `Codable` primitives like `String`, `Bool`, and `Int` but also with custom `Codable` classes, structs, and enums for example. Let's take a look at how this works in practice.
 
-**💡 Tip:** Using `enum` cases with associated values, you can describe different types of events within the same type, as long as the associated values are `Codable`. This allows you to represent the placement of different basic geometry nodes in an `ARSKView` with only one type (the custom conformance to `Codable` has been omitted for brevity):
+#### 💡 Tip
+
+Using `enum` cases with associated values, you can describe different types of events within the same type, as long as the associated values are `Codable`. This allows you to represent the placement of different basic geometry nodes in an `ARSKView` with only one type (the custom conformance to `Codable` has been omitted for brevity):
 
 ```swift
 enum Event: Codable {
