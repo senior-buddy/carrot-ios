@@ -41,9 +41,9 @@ public struct Message<T: Codable> {
 
 The `transform` property can be used to encode information about the position, orientation, and scale of objects pertaining to these encoded events, just like the corresponding property on [ARAnchor](https://developer.apple.com/documentation/arkit/aranchor/2867981-transform) in ARKit.
 
-The generic `object` parameter allows you, the developer, to package any `Codable` information within a `Message`. This works nicely not only with `Codable` primitives like `String`, `Bool`, and `Int` but also with custom `Codable` structs. Let's take a look at how this works in practice.
+The generic `object` parameter allows you, the developer, to package any `Codable` information within a `Message`. This works nicely not only with `Codable` primitives like `String`, `Bool`, and `Int` but also with custom `Codable` classes, structs, and enums for example. Let's take a look at how this works in practice.
 
-**💡 Tip:** Using `enum` cases with associated values, you can describe different types of events within the same type, as long as the associated values are `Codable`. This means you can do something like this to represent the placement of basic geometry nodes in an `ARSKView` (the custom conformance to `Codable` has been omitted for brevity):
+**💡 Tip:** Using `enum` cases with associated values, you can describe different types of events within the same type, as long as the associated values are `Codable`. This allows you to represent the placement of different basic geometry nodes in an `ARSKView` with only one type (the custom conformance to `Codable` has been omitted for brevity):
 
 ```swift
 enum Event: Codable {
@@ -60,7 +60,7 @@ let message: Message<Event> = ...
 
 Let's say you want your app to communicate to other clients that you've placed an `SKLabelNode` somewhere in your `ARSKView`, for example. This would allow you to broadcast this information to other devices and build a multi-device AR experience instead of a just standard and boring one 😛
 
-You'd be able to use the following `struct` to encode all the necessary information about an `SKLabelNode`:
+You'd be able to use the following `struct` to encode all the information about an `SKLabelNode`:
 
 ```swift
 struct LabelEvent: Codable {
