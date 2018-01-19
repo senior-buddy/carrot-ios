@@ -56,7 +56,7 @@ enum Event: Codable {
 let message: Message<Event> = ...
 ```
 
-[Little Bites of Cocoa #318](https://littlebitesofcocoa.com/318-codable-enums) is a great tutorial on how to make `enum`s with associated values conform to `Codable`.
+[Little Bites of Cocoa #318](https://littlebitesofcocoa.com/318-codable-enums) is a great tutorial on how to make an `enum` with associated values conform to `Codable`.
 
 ### Example
 
@@ -78,7 +78,7 @@ let message = Message(transform: anchor.transform, object: LabelEvent(text: "ðŸ¥
 // Send the message via my `CarrotSession`
 ```
 
-Upon receiving the message, another client would be able to decode it and render the `SKLabelNode`. We'll go over both the sending and receiving of messages in the following sections.
+Upon receiving the message, another client would be able to decode it and have all the information necessary to render the `SKLabelNode`. We'll go over both the sending and receiving of messages in the following sections.
 
 ## ðŸŽ™ Sending Messages to Carrot
 
