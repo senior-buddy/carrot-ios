@@ -33,18 +33,86 @@ Sessions are central to Carrot apps. A session is responsible for two things:
 1. Managing authentication via some underlying protocol.
 2. Providing a clean interface to the WebSocket used to relay messages to/from the Carrot server.
 
-There are two types of sessions in Carrot: `CarrotSession` and `CustomCarrotSession`. The difference between the two lies in the underlying protocol: 
+When it comes to sessions, the word protocol is referring to a set of rules that governs the communications between computers on a network, _not_ the Swift keyword. There are two types of sessions in Carrot: `CarrotSession` and `CustomCarrotSession`, and the difference between the two lies in the underlying protocol: 
 
-| Session | Protocol |
+|         Session        |    Protocol    |
 | ---------------------- | ----------------
 | `CarrotSession`        | `PicnicProtocol`
 | `CustomCarrotSession`  | Custom protocol conforming to `SessionDriver`
 
+You may use `start(stateDidChange: @escaping (Driver.State) -> Void)` and `end()` in order to start/end sessions, respectively. Let's take a closer look at `CarrotSession`, which is the easiest way to get started with Carrot and the Picnic Protocol.
+
 ### CarrotSession
+
+Under the hood, `CarrotSession` uses the `PicnicProtocol` class as its `SessionDriver`:
+
+```swift
+public final class CarrotSession<T: Codable>: CustomCarrotSession<PicnicProtocol, T> {
+    
+  public init(
+    socket: Socket,
+    currentTransform: @escaping () -> matrix_float4x4?,
+    messageHandler: @escaping (MessageResult<T>) -> Void,
+    errorHandler: @escaping (PicnicProtocol.State?, Error) -> Void)
+    
+}
+```
+
+#### Socket
+
+The `Socket` protocol, declared in `Socket.swift`, allows you to provide Carrot with whatever underlying implemention of a `WebSocket` you wish. For an example using Facebook's [SocketRocket](https://github.com/facebook/SocketRocket), see [CarrotSocket.swift](https://gist.github.com/gonzalonunez/ff23d36bef799a6a4d82d9c79d06771e).
+
+### Example
+
+Creating a `CarrotSession` within your `UIViewController` responsible for the `ARSKView`, for example, will look something like this:
+
+```swift
+carrotSession = CarrotSession(
+      socket: socket,
+      currentTransform: { [weak self] in
+        return self?.sceneView.session.currentFrame?.camera.transform
+      },
+      messageHandler: { result in
+        // handle receiving messages here
+      },
+      errorHandler: { _, error in
+        // handle errors here
+      })
+```
 
 ### CustomCarrotSession
 
+**⚠️ Warning:** At the time of writing, custom authentication protocols are not supported on the server-side. However, you can still use a `CustomCarrotSession` in order to implementing the Picnic Protocol in a different way or to layer other logic on top of `PicnicProtocol`.
+
+Opting for a `CustomCarrotSession` allows you to implement your own authentication protocol. This is designed for cases where maybe the Picnic Protocol is not a good fit for your multi-device AR experience. You're free to use whatever you'd like as long it conforms to the `SessionDriver` protocol, which we'll take a closer look at now.
+
 #### SessionDriver
+
+A `SessionDriver` has two responsibilities:
+
+1. Managing state transitions via the `updateState(_:_:)` method.
+2. Managing state upon receiving data via the `didReceive(_:_:_:)` method.
+
+A `SessionDriver` is essentially a state-machine that responds to state changes and reacts to data that arrives via the WebSocket while in an unauthenticated state. Data that arrives while in an authenticated state gets passed to the session's `messageHandler` instead. Taking a look at `DriverState` should help clear this up.
+
+##### DriverState
+
+`SessionDriver` "states" are represented by the `DriverState` protocol:
+
+```swift
+public protocol DriverState {
+  static var `default`: Self { get }
+  
+  var token: SessionToken? { get }
+  var isAuthenticated: Bool { get }
+}
+```
+
+Conforming to `DriverState` correctly is **very important**, as it decides whether or not messages get passed to the `SessionDriver` or the session's consumer-facing `messageHandler`. This decision depends on the current state's `isAuthenticated` flag.
+
+### Example
+
+For an concrete example of conforming to `SessionDriver`, take a look at `PicnicProtocol.swift`. It codifies the PicnicProtocol rules, standards, and state management into an object conforming to `SessionDriver` and uses `PicnicProtocolState` and its `DriverState`.
 
 ## ✉️ Messages
 
@@ -100,4 +168,85 @@ Upon receiving the message, another client would be able to decode it and have a
 
 ## 🎙 Sending Messages to Carrot
 
+Sending messages happens via `public func send(message: Message<Object>, to endpoint: Endpoint) throws`. On top of the actual `Message<Object>` itself, this method requires an `Endpoint`. This `Endpoint` is how the server-side knows what controller to route the message to. 
+
+### Example
+
+Using the `LabelEvent` we defined earlier, sending a message from the `UIViewController` responsible for the `ARSKView` would look something like this:
+
+```swift
+guard let currentTransform = sceneView.session.currentFrame?.camera.transform else { return }
+
+let message = Message(
+      transform: currentTransform,
+      object: LabelEvent(text: "🥕"))
+    
+do {
+  try carrotSession.send(message: message, to: "draw")
+} catch {
+  // handle the error here
+}
+```
+
 ## 📨 Receiving Messages from Carrot
+
+Receiving messages happens via the `messageHandler` closure of type `(MessageResult<T>) -> Void` that you provide in the initializer of a session. Messages get passed to this closure when the underlying `SessionDriver`'s state is an authenticated one.
+
+#### 💡 Tip
+
+Thanks to first class functions in Swift, you might want to do something like this when you initialize your session:
+
+```swift
+carrotSession = CarrotSession(
+      socket: socket,
+      currentTransform: { [weak self] in
+        return self?.sceneView.session.currentFrame?.camera.transform
+      },
+      messageHandler: didReceive,
+      errorHandler: { _, error in
+        // handle errors here
+      })
+      
+func didReceive(messageResult result: MessageResult<LabelEvent>) {
+  switch result {
+    case let .success(message, endpoint):
+      // handle message here
+    case let .error(error):
+      // handle error here
+   }
+}
+```
+
+### Example
+
+Here's an example of parsing a `MessageResult` and rendering it accordingly using the same function we define in the tip above:
+
+```swift
+var labels = [ARAnchor: LabelEvent]()
+
+func didReceive(messageResult result: MessageResult<LabelEvent>) {
+  switch result {
+    case let .success(message, _):
+       // In this example, we ignore the endpoint since there's only one. We also know every `LabelEvent` is tied to a transform.
+       guard let transform = message.transform else { return }
+       let anchor = ARAnchor(transform: transform)
+       labels[anchor] = message.object
+       sceneView.add(anchor: anchor)
+    case let .error(error):
+      // handle error here
+   }
+}
+```
+
+Now, in the same `UIViewController`, we can implement `ARSKViewDelegate`'s `func view(_ view: ARSKView, nodeFor anchor: ARAnchor)`:
+
+```swift
+func view(_ view: ARSKView, nodeFor anchor: ARAnchor) -> SKNode? {
+   guard let labelEvent = labels[anchor] else { return nil }
+   let labelNode = SKLabelNode(text: labelEvent.text)
+   // If we wanted to, we can give `LabelEvent` a way to codify the following alignment modes as well! 
+   labelNode.horizontalAlignmentMode = .center
+   labelNode.verticalAlignmentMode = .center
+   return labelNode
+ }
+```
