@@ -22,9 +22,40 @@ Carrot is an easy-to-use, real-time framework for building applications with mul
 
 ## ✨ Features
 
+Here are some of what we think are Carrot's best features!
+
+### 🤸‍♀️ Flexibility
+
+Carrot is completely separate from any particular renderer, leaving you free to render however you'd like! Carrot is also agnostic to any specific WebSocket implementation, leaving you in control of how you'd like to go about your networking. Not to mention, messages allow for any kind of information to get passed around between clients and taken advantage of by custom controllers on the server-side.
+
+### ⚡️ Speed
+
+Carrot is real-time, lightning fast, and only getting faster thanks to some clever engineering on the backend. Carrot performs great even at around 30,000 requests per second, providing for a seamless multi-device AR experience.
+
+### 🎛 Customizable
+
+Carrot is heavily customizable thanks to `SessionDriver`. Implement your own state management and authentication protocol while still being able to take advantage of the many other benefits Carrot provides.
+
+### 🚀 Lightweight
+
+Carrot allows you to take an existing AR app and make it multi-device without writing too much code, allowing you to focus on perfecting and shipping your AR experience! Initialize a session, render incoming messages, broadcast local rendering events and forget about it!
+
 ## 📋 To-Do
 
+First off, we'd love as much input from the community as possible! Please don't hesitate to create issues for any problems encountered and PRs to get discussions kicked off about features you'd like to see Carrot implement. It's very early on in the framework's lifespan and we'd like to take this in whatever direction the community wants 🙂
+
+Here are a few things we have in mind (in no particular order):
+
+- [ ] Swift Package Manager support
+- [ ] Custom `SessionDriver` parity on the server-side
+- [ ] Error recovery commands
+- [ ] Header fields in `Socket` protocol
+- [ ] Abstract away `PicnicProtocol` iBeacon functionality into a protocol
+- [ ] More flexible route, endpoint & message paradigm (something like registering callbacks instead)
+
 ## 🥗 The Picnic Protocol
+
+TODO
 
 ## 🌎 Sessions
 
