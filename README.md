@@ -33,7 +33,7 @@ Sessions are central to Carrot apps. A session is responsible for two things:
 1. Managing authentication via some underlying protocol.
 2. Providing a clean interface to the WebSocket used to relay messages to/from the Carrot server.
 
-When it comes to sessions, the word protocol is referring to a set of rules that governs the communications between computers on a network, _not_ the Swift keyword. There are two types of sessions in Carrot: `CarrotSession` and `CustomCarrotSession`, and the difference between the two lies in the underlying protocol: 
+**When it comes to sessions, the word protocol is referring to a set of rules that governs the communications between computers on a network, not the Swift keyword.** There are two types of sessions in Carrot: `CarrotSession` and `CustomCarrotSession`, and the difference between the two lies in the underlying protocol: 
 
 |         Session        |    Protocol    |
 | ---------------------- | ----------------
