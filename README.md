@@ -240,7 +240,7 @@ func didReceive(messageResult result: MessageResult<LabelEvent>) {
 }
 ```
 
-Now, in the same `UIViewController`, we can implement `ARSKViewDelegate`'s `func view(_ view: ARSKView, nodeFor anchor: ARAnchor)`:
+Now, in the same `UIViewController`, we can implement `ARSKViewDelegate`'s `view(_ view: ARSKView, nodeFor anchor: ARAnchor)`:
 
 ```swift
 func view(_ view: ARSKView, nodeFor anchor: ARAnchor) -> SKNode? {
