@@ -82,9 +82,11 @@ carrotSession = CarrotSession(
 
 ### CustomCarrotSession
 
-**⚠️ Warning:** At the time of writing, custom authentication protocols are not supported on the server-side. However, you can still use a `CustomCarrotSession` in order to implementing the Picnic Protocol in a different way or to layer other logic on top of `PicnicProtocol`.
-
 Opting for a `CustomCarrotSession` allows you to implement your own authentication protocol. This is designed for cases where maybe the Picnic Protocol is not a good fit for your multi-device AR experience. You're free to use whatever you'd like as long it conforms to the `SessionDriver` protocol, which we'll take a closer look at now.
+
+#### ⚠️ Warning:
+
+At the time of writing, custom authentication protocols are not supported on the server-side. However, you can still use a `CustomCarrotSession` in order to implementing the Picnic Protocol in a different way or to layer other logic on top of `PicnicProtocol`.
 
 #### SessionDriver
 
